@@ -11,7 +11,7 @@ namespace muduo
 
 Exception::Exception(string msg)
   : message_(std::move(msg)),
-    stack_(CurrentThread::stackTrace(/*demangle=*/false))
+    stack_(CurrentThread::stackTrace(/*demangle=*/false)) // 构造函数里添加记录调用堆栈的功能
 {
 }
 

@@ -16,7 +16,7 @@
 using namespace muduo;
 
 FileUtil::AppendFile::AppendFile(StringArg filename)
-  : fp_(::fopen(filename.c_str(), "ae")),  // 'e' for O_CLOEXEC
+  : fp_(::fopen(filename.c_str(), "ae")),  // 'e' for O_CLOEXEC //linux操作文件 先fopen打开
     writtenBytes_(0)
 {
   assert(fp_);
@@ -26,7 +26,7 @@ FileUtil::AppendFile::AppendFile(StringArg filename)
 
 FileUtil::AppendFile::~AppendFile()
 {
-  ::fclose(fp_);
+  ::fclose(fp_); // 使用完毕后 fclose 关闭
 }
 
 void FileUtil::AppendFile::append(const char* logline, const size_t len)
@@ -60,7 +60,7 @@ void FileUtil::AppendFile::flush()
 size_t FileUtil::AppendFile::write(const char* logline, size_t len)
 {
   // #undef fwrite_unlocked
-  return ::fwrite_unlocked(logline, 1, len, fp_);
+  return ::fwrite_unlocked(logline, 1, len, fp_); //linux写入文件
 }
 
 FileUtil::ReadSmallFile::ReadSmallFile(StringArg filename)
@@ -100,12 +100,12 @@ int FileUtil::ReadSmallFile::readToString(int maxSize,
     if (fileSize)
     {
       struct stat statbuf;
-      if (::fstat(fd_, &statbuf) == 0)
+      if (::fstat(fd_, &statbuf) == 0)//先读取文件信息 包括 大小 修改时间 创建时间 
       {
         if (S_ISREG(statbuf.st_mode))
         {
           *fileSize = statbuf.st_size;
-          content->reserve(static_cast<int>(std::min(implicit_cast<int64_t>(maxSize), *fileSize)));
+          content->reserve(static_cast<int>(std::min(implicit_cast<int64_t>(maxSize), *fileSize)));//修改string的缓冲区大小
         }
         else if (S_ISDIR(statbuf.st_mode))
         {
@@ -125,7 +125,7 @@ int FileUtil::ReadSmallFile::readToString(int maxSize,
         err = errno;
       }
     }
-
+    // 循环读入文件内容
     while (content->size() < implicit_cast<size_t>(maxSize))
     {
       size_t toRead = std::min(implicit_cast<size_t>(maxSize) - content->size(), sizeof(buf_));

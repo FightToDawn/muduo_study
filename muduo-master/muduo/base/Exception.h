@@ -11,7 +11,7 @@
 
 namespace muduo
 {
-
+// 定义一个自己的异常类 添加记录调用堆栈的功能
 class Exception : public std::exception
 {
  public:

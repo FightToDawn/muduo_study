@@ -20,14 +20,14 @@ namespace muduo
 class Thread : noncopyable
 {
  public:
-  typedef std::function<void ()> ThreadFunc;
+  typedef std::function<void ()> ThreadFunc; //使用std::function可以实现多参数的调用 可以把多个参数bind进来 包括类成员函数
 
   explicit Thread(ThreadFunc, const string& name = string());
   // FIXME: make it movable in C++11
   ~Thread();
 
-  void start();
-  int join(); // return pthread_join()
+  void start(); //线程的创建
+  int join(); // return pthread_join() //线程的等待
 
   bool started() const { return started_; }
   // pthread_t pthreadId() const { return pthreadId_; }

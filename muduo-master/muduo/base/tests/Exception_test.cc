@@ -21,7 +21,7 @@ class Bar
     func = std::bind(&Bar::callback, this);
     func();
 
-    throw muduo::Exception("oops");
+    throw muduo::Exception("oops"); //抛出异常 并记录此时的调用堆栈
   }
 
  private:
@@ -46,6 +46,6 @@ int main()
   catch (const muduo::Exception& ex)
   {
     printf("reason: %s\n", ex.what());
-    printf("stack trace:\n%s\n", ex.stackTrace());
+    printf("stack trace:\n%s\n", ex.stackTrace()); //输出调用堆栈
   }
 }

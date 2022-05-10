@@ -40,7 +40,7 @@ void AsyncLogging::append(const char* logline, int len)
   }
   else
   {
-    buffers_.push_back(std::move(currentBuffer_));
+    buffers_.push_back(std::move(currentBuffer_));//移动 而非复制
 
     if (nextBuffer_)
     {

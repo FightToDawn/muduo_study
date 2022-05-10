@@ -71,14 +71,14 @@ struct ThreadData
   {
     *tid_ = muduo::CurrentThread::tid();
     tid_ = NULL;
-    latch_->countDown();
+    latch_->countDown();//计数器减1 这样Thread::start函数就可以结束等待了
     latch_ = NULL;
 
     muduo::CurrentThread::t_threadName = name_.empty() ? "muduoThread" : name_.c_str();
     ::prctl(PR_SET_NAME, muduo::CurrentThread::t_threadName);
     try
     {
-      func_();
+      func_(); //调用真正的线程函数
       muduo::CurrentThread::t_threadName = "finished";
     }
     catch (const Exception& ex)
@@ -104,7 +104,7 @@ struct ThreadData
     }
   }
 };
-
+//代理函数 启动线程
 void* startThread(void* obj)
 {
   ThreadData* data = static_cast<ThreadData*>(obj);
@@ -175,8 +175,8 @@ void Thread::start()
   assert(!started_);
   started_ = true;
   // FIXME: move(func_)
-  detail::ThreadData* data = new detail::ThreadData(func_, name_, &tid_, &latch_);
-  if (pthread_create(&pthreadId_, NULL, &detail::startThread, data))
+  detail::ThreadData* data = new detail::ThreadData(func_, name_, &tid_, &latch_); //把真正的的线程函数 计时器等组成一个自定义参数
+  if (pthread_create(&pthreadId_, NULL, &detail::startThread, data)) // linux 创建线程 第3个参数是线程函数的代理函数 第4个参数是自定义参数
   {
     started_ = false;
     delete data; // or no delete?
@@ -184,7 +184,7 @@ void Thread::start()
   }
   else
   {
-    latch_.wait();
+    latch_.wait();//创建线程成功 等待线程函数里的计时器latch_.countDawn
     assert(tid_ > 0);
   }
 }
