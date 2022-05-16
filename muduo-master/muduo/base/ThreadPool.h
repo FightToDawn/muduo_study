@@ -20,7 +20,7 @@ namespace muduo
 class ThreadPool : noncopyable
 {
  public:
-  typedef std::function<void ()> Task;
+  typedef std::function<void ()> Task; // 任务回调函数
 
   explicit ThreadPool(const string& nameArg = string("ThreadPool"));
   ~ThreadPool();
@@ -51,14 +51,14 @@ class ThreadPool : noncopyable
   void runInThread();
   Task take();
 
-  mutable MutexLock mutex_;
+  mutable MutexLock mutex_; //锁 多个任务线程同时执行 访问queue_  notEmpty_  notFull_ 需要加锁
   Condition notEmpty_ GUARDED_BY(mutex_);
   Condition notFull_ GUARDED_BY(mutex_);
   string name_;
-  Task threadInitCallback_;
-  std::vector<std::unique_ptr<muduo::Thread>> threads_;
-  std::deque<Task> queue_ GUARDED_BY(mutex_);
-  size_t maxQueueSize_;
+  Task threadInitCallback_; //初始化回调
+  std::vector<std::unique_ptr<muduo::Thread>> threads_;  //线程池
+  std::deque<Task> queue_ GUARDED_BY(mutex_); //任务回调函数 队列  BlockingQueue配合condition
+  size_t maxQueueSize_;//队列最大长度
   bool running_;
 };
 

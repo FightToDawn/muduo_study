@@ -21,8 +21,8 @@ void test(int maxSize)
 {
   LOG_WARN << "Test ThreadPool with max queue size = " << maxSize;
   muduo::ThreadPool pool("MainThreadPool");
-  pool.setMaxQueueSize(maxSize);
-  pool.start(5);
+  pool.setMaxQueueSize(maxSize); //设置任务队列的最大长度 基本不影响任务执行完成的时间 
+  pool.start(5); //开启5个线程
 
   LOG_WARN << "Adding";
   pool.run(print);

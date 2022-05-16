@@ -96,6 +96,7 @@ class SudokuServer
 
     if (puzzle.size() == implicit_cast<size_t>(kCells))
     {
+      //用线程池来执行耗时函数
       threadPool_.run(std::bind(&solve, conn, puzzle, id));
     }
     else
